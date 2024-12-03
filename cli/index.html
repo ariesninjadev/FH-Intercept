@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asphalt</title>
+    <style>
+        body {
+            background-color: #222;
+            color: #eee;
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #333;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            width: 40vw;
+        }
+
+        .data-item {
+            margin-bottom: 20px;
+        }
+
+        .label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .value {
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Asphalt</h1>
+    <div class="container">
+        <div class="data-item">
+            <span class="label">Runtime:</span>
+            <span class="value" id="time"></span>
+        </div>
+        <div class="data-item">
+            <span class="label">Money:</span>
+            <span class="value" id="money">$0.00</span>
+        </div>
+        <div class="data-item">
+            <span class="label">Status:</span>
+            <span class="value" id="status">Unknown</span>
+        </div>
+        <div class="data-item">
+            <span class="label">Crop:</span>
+            <span class="value" id="crop">N/A</span>
+        </div>
+        <div class="data-item">
+            <span class="label">Pests:</span>
+            <span class="value" id="pests">0</span>
+        </div>
+    </div>
+
+    <script>
+        var data;
+
+        function findField(f) {
+            let intent = data.length-1;
+            console.log(data[intent]);
+            
+            while (intent >= 0) {
+                if (getType(intent) != "Running") {
+                    intent--;
+                    continue;
+                }
+                for (const e of data[intent].fields) {
+                    if (e.name == f) {
+                        return e.value;
+                    }
+                }
+                intent--;
+            }
+            return "Unknown";
+        }
+
+        function getType(at) {
+            console.log(at);
+            let desc = data[at].description;
+            if (desc == "## I'm still alive!") {
+                return "Running";
+            } else if (desc == "### [Pests Destroyer]\nStarting killing shitters!") {
+                return "Pests";
+            } else if (desc == "### Macro enabled!") {
+                return "Started";
+            } else if (desc == "### Macro disabled!") {
+                return "Stopped";
+            } else if (desc == "###[Visitors Macro]") {
+                return "Visitor";
+            } else {
+                return "Unknown";
+            }
+        }
+
+        function display() {
+            document.getElementById("time").innerText = findField("Runtime");
+            document.getElementById("money").innerText = findField("Total Profit");
+            document.getElementById("status").innerText = getType(data.length-1);
+            document.getElementById("crop").innerText = findField("Crop Type");
+            document.getElementById("pests").innerText = findField("Pests");
+        }
+
+        function updateTime() {
+            const timeElement = document.getElementById('time');
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            timeElement.textContent = timeString;
+        }
+
+        //updateTime();
+        //setInterval(updateTime, 1000);
+
+        async function fetchData() {
+            try {
+                const response = await fetch('https://localhost:3000/data');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                data = await response.json();
+                data = data.data;
+                // console.log(data); // For debugging purposes
+            } catch (error) {
+                console.error('There has been a problem with your fetch operation:', error);
+            }
+            display();
+        }
+
+        fetchData();
+        setInterval(fetchData, 15000);
+    </script>
+</body>
+
+</html>
