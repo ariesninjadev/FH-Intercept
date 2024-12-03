@@ -127,7 +127,7 @@
 
         async function fetchData() {
             try {
-                const response = await fetch('https://localhost:3000/data');
+                const response = await fetch('https://klay.lol:25565/data');
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
