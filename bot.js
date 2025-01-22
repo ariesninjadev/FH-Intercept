@@ -106,7 +106,7 @@ client.on('messageCreate', (message) => {
 });
 
 // Login to Discord with your bot's token
-client.login('MTMxMzIyNjU0NjA0NzIyNjAxNg.G20kNB.Nufan1JWOONZlRZa9GxdU-QUAtMEk4KSMr49Y0'); // Replace with your bot's token
+client.login('SECRET_KEY'); // Replace with your bot's token
 
 // Express server setup
 const app = express();
